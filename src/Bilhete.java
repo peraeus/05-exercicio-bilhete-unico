@@ -3,8 +3,8 @@ import java.util.Random;
 public class Bilhete {
 
 
-    double saldo;
     static final double tarifaBase = 5.20;
+    double saldo;
     long numero;
     Usuario usuario;
 
