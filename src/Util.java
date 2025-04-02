@@ -11,13 +11,15 @@ public class Util {
 
     public void menuPrincipal() {
         int opcao;
-        String menu = "1. Administrador\n2. Usuario\n3. Finalizar\n";
+        String menu = "1. Administrador\n2. Usuário\n3. Finalizar\n";
+
         do {
             opcao = parseInt(showInputDialog(menu));
-            if (opcao < 1 || opcao > 3) {
+            if(opcao < 1 || opcao > 3) {
                 showMessageDialog(null, "Opção inválida");
-            } else {
-                switch (opcao) {
+            }
+            else {
+                switch(opcao) {
                     case 1:
                         menuAdministrador();
                         break;
@@ -26,22 +28,23 @@ public class Util {
                         break;
                 }
             }
-        } while (opcao != 3);
 
+        } while(opcao != 3);
 
     }
 
-    // menu com as funcionalidades do admin
+    // método com as funcionalidades do admin
     private void menuAdministrador() {
         int opcao;
-        String menu = "1. Emitir Bilhete\n 2. Listar os bilhetes\n" +
-                " 3.Remover bilhete\n 4. Sair";
+        String menu = "1. Emitir bilhete\n2. Listar bilhetes\n" +
+                "3. Remover bilhete\n4. Sair";
         do {
             opcao = parseInt(showInputDialog(menu));
-            if (opcao < 1 || opcao > 4) {
+            if(opcao < 1 || opcao > 4) {
                 showMessageDialog(null, "Opção inválida");
-            } else {
-                switch (opcao) {
+            }
+            else {
+                switch(opcao) {
                     case 1:
                         emitirBilhete();
                         break;
@@ -49,62 +52,23 @@ public class Util {
                         listarBilhetes();
                         break;
                     case 3:
-                        removerBilhetes();
+                        removerBilhete();
                 }
             }
-        } while (opcao != 4);
+        } while(opcao != 4);
     }
 
-    private void emitirBilhete() {
-        String nome;
-        String perfil;
-        long cpf;
-        if (index < bilhete.length) {
-            nome = showInputDialog("Nome");
-            cpf = parseLong(showInputDialog("CPF"));
-            perfil = showInputDialog("Tipo de tarifa(perfil) --> Professor ou Estudante ou Comum");
-
-            bilhete[index] = new Bilhete(new Usuario(nome, cpf, perfil));
-            index++;
-        } else {
-            showMessageDialog(null, "Procure a administração");
-        }
-
-    }
-
-    // metodo para listar os dados do bilhete --> nome, cpf, saldo e perfil
-    private void listarBilhetes() {
-        DecimalFormat df = new DecimalFormat("0.00");
-        String aux = "";
-        for (int i = 0; i < index; i++) {
-            aux += "Nome do usuário: " + bilhete[i].usuario.nome + "\n";
-            aux += "CPF do usuário: " + bilhete[i].usuario.cpf + "\n";
-            aux += "Número do bilhete: " + bilhete[i].numero + "\n";
-            aux += "Saldo do bilhete: " + df.format(bilhete[i].saldo) + "\n";
-            aux += "Perfil do usuário: " + bilhete[i].usuario.perfil + "\n";
-            aux += "------------------------------------------\n";
-
-        }
-
-        showMessageDialog(null, aux);
-
-    }
-
-    private void removerBilhetes() {
-
-    }
-
-    // menu com as funcionalidades do usuario do bilhete
+    // método com as funcionalidades do usuário do bilhete
     private void menuUsuario() {
         int opcao;
-        String menu = "1. Consultar saldo\n 2. Carregar bilhete\n" +
-                " 3. Passar na catraca\n 4. Sair";
+        String menu = "1. Consultar saldo\n2. Carregar bilhete\n3. Passar na catraca\n4. Sair";
         do {
             opcao = parseInt(showInputDialog(menu));
-            if (opcao < 1 || opcao > 4) {
+            if(opcao < 1 || opcao > 4) {
                 showMessageDialog(null, "Opção inválida");
-            } else {
-                switch (opcao) {
+            }
+            else {
+                switch(opcao) {
                     case 1:
                         consultarSaldo();
                         break;
@@ -112,57 +76,97 @@ public class Util {
                         carregarBilhete();
                         break;
                     case 3:
-                        passarCatraca();
+                        passarNaCatraca();
+                        break;
                 }
             }
-        } while (opcao != 4);
+        } while(opcao != 4);
     }
 
-    // metodo auxiliar para os outros metodos da aplicação
-    private int pesquisarCPF() {
+    // método para emitir um bilhete --> gerar um objeto e armazenar no vetor
+    private void emitirBilhete() {
+        String nome, perfil;
+        long cpf;
+
+        if(index < bilhete.length) {
+            nome = showInputDialog("Nome");
+            cpf = parseLong(showInputDialog("CPF"));
+            perfil = showInputDialog("Tipo de tarifa (perfil) --> Professor ou Estudante ou Comum");
+            bilhete[index] = new Bilhete(new Usuario(cpf, nome, perfil));
+            index++;
+        }
+        else {
+            showMessageDialog(null, "Procure a administração");
+        }
+
+
+    }
+
+    // método para listar os dados do bilhete --> nome, cpf, saldo e perfil
+    private void listarBilhetes() {
+        DecimalFormat df = new DecimalFormat("0.00");
+        String aux = "";
+        for(int i = 0; i < index; i++) {
+            aux += "Nome do usuário: " + bilhete[i].usuario.nome + "\n";
+            aux += "CPF: " + bilhete[i].usuario.cpf + "\n";
+            aux += "Número do bilhete: " + bilhete[i].numero + "\n";
+            aux += "Saldo: R$ " + df.format(bilhete[i].saldo) + "\n";
+            aux += "Perfil (tipo de tarifa): " + bilhete[i].usuario.perfil + "\n";
+            aux += "---------------------------------------------\n";
+        }
+        showMessageDialog(null, aux);
+    }
+
+    // método para remover um bilhete
+    private void removerBilhete() {
+        int resposta;
+        int posicao = pesquisar();
+        if(posicao != -1) {
+            resposta = showConfirmDialog(null, "Tem ctz que deseja remover o bilhete?");
+            if (resposta == YES_OPTION) {
+                index--;
+                bilhete[posicao] = bilhete[index];
+
+            }
+
+        }
+    }
+
+    // método para carregar o bilhete --> com valor informado pelo usuário
+    private void carregarBilhete() {
+        double valor;
+        int posicao = pesquisar();
+        if(posicao != -1) {
+            valor = parseDouble(showInputDialog("Valor para carregar o bilhete"));
+            bilhete[posicao].carregar(valor);
+        }
+    }
+
+    // método para consultar o saldo
+    private void consultarSaldo() {
+        int posicao = pesquisar();
+        if(posicao != -1) {
+            showMessageDialog(null, "Saldo = R$ " + bilhete[posicao].consultarSaldo());
+        }
+    }
+
+    // método para passar na catraca --> simulação
+    private void passarNaCatraca() {
+        int posicao = pesquisar();
+        if(posicao != -1) {
+            showMessageDialog(null, bilhete[posicao].passarNaCatraca());
+        }
+    }
+
+    // método auxiliar para os outros métodos da aplicação
+    private int pesquisar() {
         long cpf = parseLong(showInputDialog("CPF"));
-        for (int i = 0; i < index; i++) {
-            if (bilhete[i].usuario.cpf == cpf) {
+        for(int i = 0; i < index; i++) {
+            if(bilhete[i].usuario.cpf == cpf) {
                 return i;
             }
         }
         showMessageDialog(null, cpf + " não encontrado");
         return -1;
     }
-
-
-    // metodo para consultar o saldo
-    private void consultarSaldo() {
-        int posicao = pesquisarCPF();
-        if (posicao != -1) {
-            showMessageDialog(null, "Saldo = R$ " + bilhete[posicao].consultarSaldo());
-        }
-
-    }
-
-    // metodo para carregar bilhete --> com valor informado pelo usuario
-    private void carregarBilhete() {
-        double valor;
-        int posicao = pesquisarCPF();
-        if (posicao != -1) {
-            valor = parseDouble(showInputDialog("Valor para carregar bilhete"));
-            bilhete[posicao].carregar(valor);
-        }
-
-    }
-
-    // metodo para passar na catraca --> simulação
-    private void passarCatraca() {
-        int posicao = pesquisarCPF();
-        if (posicao != -1) {
-            showMessageDialog(null, bilhete[posicao].passarCatraca());
-        }
-
-    }
-
-
 }
-
-
-
-
